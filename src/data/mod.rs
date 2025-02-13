@@ -1,8 +1,5 @@
-mod board;
-pub use self::board::*;
+mod chess_board;
+pub use self::chess_board::*;
 
 mod engine;
 pub use self::engine::*;
-
-mod position;
-pub use self::position::*;
