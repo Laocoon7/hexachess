@@ -1,5 +1,5 @@
-mod draw_gizmos;
-pub use self::draw_gizmos::*;
+mod draw_highlights;
+pub use self::draw_highlights::*;
 
 mod handle_input;
 pub use self::handle_input::*;

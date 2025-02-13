@@ -2,7 +2,7 @@ use bevy::{prelude::*, window::PrimaryWindow};
 use hexx::Hex;
 
 use crate::{
-    data::ChessPiece,
+    components::ChessPiece,
     resources::{HighlightedHexes, Map},
 };
 
@@ -26,13 +26,13 @@ pub fn highlight_hexes(
         highlighted_hexes.reset(&mut commands, &map);
 
         for hex in Hex::ZERO.line_to(hex) {
-            highlighted_hexes.add_to_path(&mut commands, &map, hex);
+            highlighted_hexes.add_to_path(hex);
         }
 
-        highlighted_hexes.hover(&mut commands, &map, hex);
+        highlighted_hexes.hover(hex);
 
-        for successor in ChessPiece::Rook.successors(Hex::ZERO, true) {
-            highlighted_hexes.add_to_attack(&mut commands, &map, successor);
+        for successor in ChessPiece::rook(false).successors(Hex::ZERO) {
+            highlighted_hexes.add_to_attack(successor);
         }
     }
 }
@@ -48,8 +48,8 @@ fn get_hovered_hex(
             .viewport_to_world_2d(camera_transform, viewport_position)
             .ok()
     }) {
-        let hex = map.layout.world_pos_to_hex(pos);
-        if map.entities.contains_key(&hex) {
+        let hex = map.board.layout.world_pos_to_hex(pos);
+        if map.tile_entities.contains_key(&hex) {
             Some(hex)
         } else {
             None

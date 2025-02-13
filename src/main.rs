@@ -22,7 +22,7 @@ fn main() {
             .set(WindowPlugin {
                 primary_window: Some(Window {
                     title: String::from("Hexachess"),
-                    resolution: WindowResolution::new(1920.0, 1080.0),
+                    resolution: WindowResolution::new(883.0, 973.0),
                     ..Default::default()
                 }),
                 ..Default::default()

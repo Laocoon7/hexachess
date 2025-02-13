@@ -1,9 +1,9 @@
 use bevy::prelude::*;
 
 use crate::{
-    data::ChessPiece,
+    components::ChessPiece,
     resources::{ChessTextures, HighlightedHexes},
-    systems::{draw_gizmos, highlight_hexes, spawn_camera, spawn_map},
+    systems::{draw_highlights, handle_input, highlight_hexes, spawn_camera, spawn_map},
 };
 
 pub struct HexachessPlugin;
@@ -14,6 +14,9 @@ impl Plugin for HexachessPlugin {
         app.init_resource::<HighlightedHexes>();
 
         app.add_systems(Startup, (spawn_camera, spawn_map));
-        app.add_systems(Update, (highlight_hexes, draw_gizmos).chain());
+        app.add_systems(
+            Update,
+            (handle_input, highlight_hexes, draw_highlights).chain(),
+        );
     }
 }
