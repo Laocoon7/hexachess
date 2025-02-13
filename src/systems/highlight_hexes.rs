@@ -30,10 +30,6 @@ pub fn highlight_hexes(
         }
 
         highlighted_hexes.hover(hex);
-
-        for successor in ChessPiece::rook(false).successors(Hex::ZERO) {
-            highlighted_hexes.add_to_attack(successor);
-        }
     }
 }
 

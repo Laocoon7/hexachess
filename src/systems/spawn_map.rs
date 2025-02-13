@@ -59,7 +59,7 @@ pub fn spawn_map(
                         image: chess_textures.handle.clone_weak(),
                         texture_atlas: Some(TextureAtlas {
                             layout: chess_textures.layout.clone_weak(),
-                            index: piece.index(),
+                            index: piece.image_index(),
                         }),
                         custom_size: Some(Vec2::splat(64.0)),
                         anchor: Anchor::Custom(Vec2::new(0.0, -0.2)),

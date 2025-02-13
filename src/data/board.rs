@@ -14,9 +14,9 @@ pub trait ChessBoard {
 }
 
 const GLINSKI_COLUMNS: [char; 11] = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L'];
-const RADIUS: u32 = 5;
-const COLUMN_OFFSET: i32 = RADIUS as i32;
-const ROW_OFFSET: i32 = RADIUS as i32 + 1;
+const GLINSKI_RADIUS: u32 = 5;
+const GLINSKI_COLUMN_OFFSET: i32 = GLINSKI_RADIUS as i32;
+const GLINSKI_ROW_OFFSET: i32 = GLINSKI_RADIUS as i32 + 1;
 
 #[derive(Reflect)]
 pub struct GlinskiBoard {
@@ -42,12 +42,12 @@ impl GlinskiBoard {
 
         let column_index = GLINSKI_COLUMNS.iter().position(|&c| c == column_char)?;
 
-        let x = column_index as i32 - COLUMN_OFFSET;
+        let x = column_index as i32 - GLINSKI_COLUMN_OFFSET;
 
-        let y = if column_index < COLUMN_OFFSET as usize {
-            row - x - ROW_OFFSET
+        let y = if column_index < GLINSKI_COLUMN_OFFSET as usize {
+            row - x - GLINSKI_ROW_OFFSET
         } else {
-            row - ROW_OFFSET
+            row - GLINSKI_ROW_OFFSET
         };
 
         Some(Hex::new(x, y))
@@ -55,17 +55,17 @@ impl GlinskiBoard {
 
     pub fn to_glinski_notation(hex: Hex) -> Option<String> {
         // Center column (F) corresponds to x = 0
-        let column_index = (hex.x() + COLUMN_OFFSET) as usize;
+        let column_index = (hex.x() + GLINSKI_COLUMN_OFFSET) as usize;
 
         if column_index >= GLINSKI_COLUMNS.len() {
             return None;
         }
         let column = GLINSKI_COLUMNS[column_index];
 
-        let row = if column_index < COLUMN_OFFSET as usize {
-            hex.y() + hex.x() + ROW_OFFSET
+        let row = if column_index < GLINSKI_COLUMN_OFFSET as usize {
+            hex.y() + hex.x() + GLINSKI_ROW_OFFSET
         } else {
-            hex.y() + ROW_OFFSET
+            hex.y() + GLINSKI_ROW_OFFSET
         };
 
         if !(1..=11).contains(&row) {
@@ -76,7 +76,7 @@ impl GlinskiBoard {
     }
 
     pub fn new(hex_size: f32) -> Self {
-        let pieces: HashMap<Hex, Option<ChessPiece>> = shapes::hexagon(Hex::ZERO, RADIUS)
+        let pieces: HashMap<Hex, Option<ChessPiece>> = shapes::hexagon(Hex::ZERO, GLINSKI_RADIUS)
             .map(|hex| (hex, None))
             .collect();
 

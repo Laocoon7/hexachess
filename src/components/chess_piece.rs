@@ -1,178 +1,105 @@
 use bevy::prelude::*;
-use hexx::Hex;
 use serde::{Deserialize, Serialize};
+
+#[derive(Serialize, Deserialize, Reflect, Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PieceType {
+    Pawn,
+    Knight,
+    Bishop,
+    Rook,
+    Queen,
+    King,
+}
 
 #[derive(Serialize, Deserialize, Reflect, Component, Debug, Clone, Copy, PartialEq, Eq)]
 #[reflect(Component)]
-pub struct ChessPiece(u8);
-
-bitflags::bitflags! {
-    impl ChessPiece: u8 {
-        const PAWN      = 1;
-        const KNIGHT    = 2;
-        const BISHOP    = 3;
-        const ROOK      = 4;
-        const QUEEN     = 5;
-        const KING      = 6;
-
-        const WHITE     = 8;
-        const BLACK     = 16;
-    }
+pub enum ChessPiece {
+    White(PieceType),
+    Black(PieceType),
 }
 
 impl ChessPiece {
     pub fn pawn(black: bool) -> Self {
         if black {
-            ChessPiece::PAWN | ChessPiece::BLACK
+            ChessPiece::Black(PieceType::Pawn)
         } else {
-            ChessPiece::PAWN | ChessPiece::WHITE
+            ChessPiece::White(PieceType::Pawn)
         }
     }
     pub fn knight(black: bool) -> Self {
         if black {
-            ChessPiece::KNIGHT | ChessPiece::BLACK
+            ChessPiece::Black(PieceType::Knight)
         } else {
-            ChessPiece::KNIGHT | ChessPiece::WHITE
+            ChessPiece::White(PieceType::Knight)
         }
     }
     pub fn bishop(black: bool) -> Self {
         if black {
-            ChessPiece::BISHOP | ChessPiece::BLACK
+            ChessPiece::Black(PieceType::Bishop)
         } else {
-            ChessPiece::BISHOP | ChessPiece::WHITE
+            ChessPiece::White(PieceType::Bishop)
         }
     }
     pub fn rook(black: bool) -> Self {
         if black {
-            ChessPiece::ROOK | ChessPiece::BLACK
+            ChessPiece::Black(PieceType::Rook)
         } else {
-            ChessPiece::ROOK | ChessPiece::WHITE
+            ChessPiece::White(PieceType::Rook)
         }
     }
     pub fn queen(black: bool) -> Self {
         if black {
-            ChessPiece::QUEEN | ChessPiece::BLACK
+            ChessPiece::Black(PieceType::Queen)
         } else {
-            ChessPiece::QUEEN | ChessPiece::WHITE
+            ChessPiece::White(PieceType::Queen)
         }
     }
     pub fn king(black: bool) -> Self {
         if black {
-            ChessPiece::KING | ChessPiece::BLACK
+            ChessPiece::Black(PieceType::King)
         } else {
-            ChessPiece::KING | ChessPiece::WHITE
+            ChessPiece::White(PieceType::King)
         }
     }
 }
 
 impl ChessPiece {
-    pub fn piece(self) -> Self {
-        Self(self.0 & 0b0000_0111)
+    pub fn piece_type(self) -> PieceType {
+        match self {
+            ChessPiece::White(piece) => piece,
+            ChessPiece::Black(piece) => piece,
+        }
     }
-    pub fn color(self) -> Self {
-        Self(self.0 & 0b0001_1000)
+    pub fn is_black(self) -> bool {
+        matches!(self, ChessPiece::Black(_))
+    }
+    pub fn is_white(self) -> bool {
+        matches!(self, ChessPiece::White(_))
     }
     pub fn value(self) -> i32 {
-        if self.contains(ChessPiece::PAWN) {
-            2
-        } else if self.contains(ChessPiece::KNIGHT) {
-            6
-        } else if self.contains(ChessPiece::BISHOP) {
-            7
-        } else if self.contains(ChessPiece::ROOK) {
-            10
-        } else if self.contains(ChessPiece::QUEEN) {
-            18
-        } else if self.contains(ChessPiece::KING) {
-            i32::MAX
-        } else {
-            0
+        match self.piece_type() {
+            PieceType::Pawn => 2,
+            PieceType::Knight => 6,
+            PieceType::Bishop => 7,
+            PieceType::Rook => 10,
+            PieceType::Queen => 18,
+            PieceType::King => i32::MAX,
         }
     }
-
-    pub fn index(self) -> usize {
-        let piece = self.piece();
-        let mut index = if piece == ChessPiece::PAWN {
-            0
-        } else if piece == ChessPiece::KNIGHT {
-            1
-        } else if piece == ChessPiece::BISHOP {
-            2
-        } else if piece == ChessPiece::ROOK {
-            3
-        } else if piece == ChessPiece::QUEEN {
-            4
-        } else if piece == ChessPiece::KING {
-            5
-        } else {
-            0
+    pub fn image_index(self) -> usize {
+        let index = match self.piece_type() {
+            PieceType::Pawn => 0,
+            PieceType::Knight => 1,
+            PieceType::Bishop => 2,
+            PieceType::Rook => 3,
+            PieceType::Queen => 4,
+            PieceType::King => 5,
         };
 
-        if self.contains(ChessPiece::BLACK) {
-            index += 6
-        }
-
-        index
-    }
-
-    pub fn successors(self, position: Hex) -> Vec<Hex> {
-        if self.contains(ChessPiece::PAWN) {
-            if self.contains(ChessPiece::WHITE) {
-                vec![position + Hex::new(0, 1)]
-            } else {
-                vec![position + Hex::new(0, -1)]
-            }
-        } else if self.contains(ChessPiece::KNIGHT) {
-            vec![
-                position + Hex::new(1, 2),
-                position + Hex::new(2, 1),
-                position + Hex::new(2, -1),
-                position + Hex::new(1, -2),
-                position + Hex::new(-1, -2),
-                position + Hex::new(-2, -1),
-                position + Hex::new(-2, 1),
-                position + Hex::new(-1, 2),
-            ]
-        } else if self.contains(ChessPiece::BISHOP) {
-            vec![
-                position + Hex::new(1, 1),
-                position + Hex::new(1, -1),
-                position + Hex::new(-1, -1),
-                position + Hex::new(-1, 1),
-            ]
-        } else if self.contains(ChessPiece::ROOK) {
-            vec![
-                position + Hex::new(1, 0),
-                position + Hex::new(1, -1),
-                position + Hex::new(0, 1),
-                position + Hex::new(0, -1),
-                position + Hex::new(-1, 0),
-                position + Hex::new(-1, 1),
-            ]
-        } else if self.contains(ChessPiece::QUEEN) {
-            vec![
-                position + Hex::new(1, 0),
-                position + Hex::new(0, 1),
-                position + Hex::new(-1, 0),
-                position + Hex::new(0, -1),
-                position + Hex::new(1, 1),
-                position + Hex::new(1, -1),
-                position + Hex::new(-1, -1),
-                position + Hex::new(-1, 1),
-            ]
-        } else if self.contains(ChessPiece::KING) {
-            vec![
-                position + Hex::new(1, 0),
-                position + Hex::new(0, 1),
-                position + Hex::new(-1, 0),
-                position + Hex::new(0, -1),
-                position + Hex::new(1, 1),
-                position + Hex::new(1, -1),
-                position + Hex::new(-1, -1),
-                position + Hex::new(-1, 1),
-            ]
+        if self.is_black() {
+            index + 6
         } else {
-            Vec::new()
+            index
         }
     }
 }
