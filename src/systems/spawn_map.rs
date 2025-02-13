@@ -9,7 +9,7 @@ use bevy::{
 use hexx::{shapes, Hex, HexLayout, PlaneMeshBuilder};
 
 use crate::{
-    data::GlinskiBoard,
+    data::ChessBoard,
     resources::{ChessTextures, Map, TileColor},
 };
 
@@ -21,7 +21,7 @@ pub fn spawn_map(
     mut a_meshes: ResMut<Assets<Mesh>>,
     mut a_materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    let board = GlinskiBoard::new(HEX_SIZE);
+    let board = ChessBoard::new(HEX_SIZE);
 
     let tile_black_material = a_materials.add(Color::Srgba(css::BLACK));
     let tile_grey_material = a_materials.add(Color::Srgba(css::GREY));
@@ -88,7 +88,7 @@ pub fn spawn_map(
                 ))
                 .with_children(|parent| {
                     parent.spawn((
-                        Text2d(GlinskiBoard::to_glinski_notation(hex).unwrap()),
+                        Text2d(ChessBoard::to_glinski_notation(hex).unwrap()),
                         TextColor(Color::Srgba(css::REBECCA_PURPLE)),
                         TextFont {
                             font_size: 14.0,

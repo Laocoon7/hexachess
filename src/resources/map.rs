@@ -1,7 +1,7 @@
 use bevy::{prelude::*, utils::HashMap};
 use hexx::{Hex, HexLayout};
 
-use crate::data::GlinskiBoard;
+use crate::data::ChessBoard;
 
 #[derive(Default, Reflect, Clone, Copy, PartialEq, Eq)]
 pub enum TileColor {
@@ -14,7 +14,7 @@ pub enum TileColor {
 #[derive(Resource, Reflect, Default)]
 #[reflect(Resource)]
 pub struct Map {
-    pub board: GlinskiBoard,
+    pub board: ChessBoard,
     pub tile_entities: HashMap<Hex, Entity>,
     pub piece_entities: HashMap<Hex, Entity>,
 
